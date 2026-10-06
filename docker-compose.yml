@@ -1,0 +1,12 @@
+services:
+  replay:
+    build: .
+    ports:
+      - "8000:8000"   # 管理界面
+      - "8001:8001"   # 回放预览源（独立源，隔离）
+    volumes:
+      - warc_data:/data
+    restart: unless-stopped
+
+volumes:
+  warc_data:

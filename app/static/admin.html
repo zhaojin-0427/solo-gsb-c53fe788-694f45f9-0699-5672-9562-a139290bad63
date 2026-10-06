@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>WARC 离线回放台 · 管理</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<h1>WARC 离线回放台 · 管理</h1>
+
+<section>
+  <h2>1. 上传档案</h2>
+  <form id="upload-form">
+    <input type="file" id="file" accept=".warc,.gz,.warc.gz" required>
+    <button type="submit">上传并导入</button>
+    <span id="upload-status"></span>
+  </form>
+  <table id="archives">
+    <thead><tr><th>ID</th><th>文件名</th><th>状态</th><th>记录数</th><th>导入时间</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>2. 打开回放</h2>
+  <form id="replay-form">
+    <label>入口 URL <input type="text" id="entry-url" placeholder="http://example.com/" required></label>
+    <label>截止时间 <input type="datetime-local" id="cutoff" step="1"></label>
+    <button type="submit">在预览源打开</button>
+    <span class="hint">留空截止时间则使用当前时间；回放将在预览源（独立端口）新标签页打开。</span>
+  </form>
+</section>
+
+<section>
+  <h2>3. 查询捕获</h2>
+  <form id="captures-form">
+    <input type="text" id="cap-url" placeholder="http://example.com/" required>
+    <button type="submit">查询</button>
+  </form>
+  <table id="captures">
+    <thead><tr><th>采集时间</th><th>类型</th><th>状态</th><th>大小</th><th>摘要</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>4. 缺档清单</h2>
+  <button id="missing-refresh">刷新</button>
+  <button id="missing-clear">清空</button>
+  <table id="missing">
+    <thead><tr><th>时间</th><th>缺失 URL</th><th>原因</th><th>来源页面</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script src="/static/admin.js"></script>
+</body>
+</html>
