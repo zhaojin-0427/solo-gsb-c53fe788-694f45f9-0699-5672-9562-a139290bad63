@@ -1,0 +1,15 @@
+services:
+  replay:
+    build: .
+    ports:
+      - "8000:8000"   # 管理端（上传、选入口、缺档清单）
+      - "8001:8001"   # 回放源（隔离源，仅离线回放）
+    volumes:
+      - replay-data:/data
+    environment:
+      # 允许嵌入预览的管理端来源（如用其它端口访问管理端，在此追加）
+      ADMIN_ORIGINS: "http://localhost:8000 http://127.0.0.1:8000"
+    restart: unless-stopped
+
+volumes:
+  replay-data:

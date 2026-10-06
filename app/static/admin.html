@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>WARC 离线回放台 · 管理端</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { font: 14px/1.6 -apple-system, "Segoe UI", "PingFang SC", sans-serif;
+         margin: 0; background: #f5f7fa; color: #1f2933; }
+  header { background: #1f2933; color: #fff; padding: 12px 20px; }
+  header h1 { font-size: 17px; margin: 0; }
+  header .note { font-size: 12px; opacity: .75; }
+  main { padding: 16px 20px; display: grid; gap: 16px; }
+  section { background: #fff; border: 1px solid #d9e2ec; border-radius: 8px;
+            padding: 14px 16px; }
+  h2 { font-size: 15px; margin: 0 0 10px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #d9e2ec; padding: 5px 8px; text-align: left;
+           font-size: 13px; vertical-align: top; }
+  th { background: #f0f4f8; white-space: nowrap; }
+  td { word-break: break-all; }
+  button { background: #2563eb; color: #fff; border: 0; border-radius: 5px;
+           padding: 6px 14px; cursor: pointer; font-size: 13px; }
+  button.ghost { background: #e4e7eb; color: #1f2933; }
+  button.danger { background: #dc2626; }
+  button:disabled { opacity: .5; cursor: default; }
+  input, select { padding: 5px 8px; border: 1px solid #9fb3c8; border-radius: 5px;
+                  font-size: 13px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .muted { color: #627d98; font-size: 12px; }
+  .err { color: #dc2626; }
+  .ok { color: #15803d; }
+  #urlInput { width: 46em; max-width: 100%; }
+  #preview { width: 100%; height: 560px; border: 1px solid #9fb3c8;
+             border-radius: 6px; background: #fff; }
+  .miss { color: #b91c1c; }
+  .hit { color: #15803d; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+  .tabs button.active { background: #1f2933; }
+  code { background: #eef2f7; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>WARC 离线回放台 · 管理端</h1>
+  <div class="note">预览在隔离的回放源（独立端口）中打开，回放页被 CSP 限制，不能访问实时外网；非 GET 请求会被阻止。</div>
+</header>
+<main>
+  <section>
+    <h2>1. 上传档案（WARC / WARC.gz）</h2>
+    <div class="row">
+      <input type="file" id="file" accept=".warc,.gz,.warc.gz">
+      <button id="uploadBtn">上传并导入</button>
+      <span id="uploadMsg" class="muted"></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 档案列表</h2>
+    <table id="archives">
+      <thead><tr><th>ID</th><th>文件名</th><th>上传时间</th><th>状态</th>
+        <th>记录数</th><th>操作</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="replaySection" style="display:none">
+    <h2>3. 选择入口与截止时间（UTC）</h2>
+    <div class="row">
+      <label>入口 URL
+        <input id="urlInput" list="urlList" placeholder="http://example.com/">
+        <datalist id="urlList"></datalist>
+      </label>
+      <label>截止时间
+        <input type="datetime-local" id="cutoff" step="1">
+      </label>
+      <button id="replayBtn">开始回放</button>
+      <a id="openTab" href="#" target="_blank" rel="noopener" class="muted">在新标签打开预览</a>
+    </div>
+    <div class="muted">只取该 URL 不晚于截止时间的最近记录；revisit 按摘要复用更早响应的正文（允许跨 URL），不借未来版本。</div>
+  </section>
+
+  <section id="previewSection" style="display:none">
+    <h2>4. 预览（隔离回放源）</h2>
+    <iframe id="preview" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+  </section>
+
+  <section id="logSection" style="display:none">
+    <h2>5. 回放记录与缺档清单</h2>
+    <div class="tabs">
+      <button id="tabAll" class="ghost">全部记录</button>
+      <button id="tabMissing" class="ghost active">缺档清单</button>
+      <button id="refreshLog" class="ghost">刷新</button>
+      <button id="clearLog" class="danger">清空日志</button>
+      <label class="muted"><input type="checkbox" id="autoRefresh" checked> 每 3 秒自动刷新</label>
+    </div>
+    <table id="log">
+      <thead><tr><th>请求时间</th><th>原址</th><th>结果</th><th>命中采集时间</th>
+        <th>HTTP</th><th>类型</th><th>缺档原因</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+<script src="/static/admin.js"></script>
+</body>
+</html>
